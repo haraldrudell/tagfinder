@@ -2,7 +2,7 @@
 	"name": "tagfinder",
 	"description": "Tagfinder parses html5 markup for opening tags and their attributes by Harald Rudell",
 	"author": "Harald Rudell <harald@allgoodapps.com> (http://www.haraldrudell.com)",
-	"keywords": ["template", "engine", "express", "html", "html5", "json", "client", "webfiller" "parser"],
+	"keywords": ["template", "engine", "express", "html", "html5", "json", "client", "webfiller", "parser"],
 	"homepage": "https://github.com/haraldrudell/tagfinder",
 	"bugs": "https://github.com/haraldrudell/tagfinder/issues",
 	"version": "0.0.2",
