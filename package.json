@@ -1,18 +1,19 @@
 {
 	"name": "tagfinder",
-	"description": "Package placeholder for a node.js module to be published August, 2012 by Harald Rudell",
+	"description": "Tagfinder parses html5 markup for opening tags and their attributes by Harald Rudell",
 	"author": "Harald Rudell <harald@allgoodapps.com> (http://www.haraldrudell.com)",
-	"keywords": ["template", "engine", "express", "html", "html5", "json", "client"],
+	"keywords": ["template", "engine", "express", "html", "html5", "json", "client", "webfiller" "parser"],
 	"homepage": "https://github.com/haraldrudell/tagfinder",
 	"bugs": "https://github.com/haraldrudell/tagfinder/issues",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"contributors": [
 		"Harald Rudell <harald@allgoodapps.com> (http://www.haraldrudell.com)"
 	],
 	"dependencies": {
 	},
 	"devDependencies": {
-		"nodeunit": ""
+		"nodeunit": "",
+		"uglify-js": ""
 	},
 	"repository" : {
 		"type" : "git",
