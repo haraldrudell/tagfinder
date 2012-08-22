@@ -5,7 +5,7 @@
 	"keywords": ["template", "engine", "express", "html", "html5", "json", "client", "webfiller", "parser"],
 	"homepage": "https://github.com/haraldrudell/tagfinder",
 	"bugs": "https://github.com/haraldrudell/tagfinder/issues",
-	"version": "0.0.2",
+	"version": "0.1.0",
 	"contributors": [
 		"Harald Rudell <harald@allgoodapps.com> (http://www.haraldrudell.com)"
 	],
@@ -13,7 +13,8 @@
 	},
 	"devDependencies": {
 		"nodeunit": "",
-		"uglify-js": ""
+		"uglify-js": "",
+		"greatjson": ""
 	},
 	"repository" : {
 		"type" : "git",

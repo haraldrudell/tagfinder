@@ -1,6 +1,6 @@
 // test-tagfinder.js
 // nodeunit test for tagextractor.js 
-// (c) Harald Rudell 2012
+// © Harald Rudell 2012
 
 var tagfinder = require('../lib/tagfinder')
 
@@ -15,7 +15,6 @@ module.exports = {
 
 // test providing empty markup
 function testEmptyMarkup(test) {
-	console.log('##############################')
 	var html
 	var expected = {
 		contents: [ 'undefined' ],
@@ -46,16 +45,15 @@ function testUncommenting(test) {
 			'</title> z',
 		],
 		tags: [{
-			tag: 'title',
-			index: 1,
-			voidElement: false,
-			attributes: {},
-			classes: [],
+			t: 'title',
+			i: 1,
+			a: {},
+			c: [],
 		}],
 	}
 
 	var actual = tagfinder.decomposeHtml(html)
-	//console.log('actual:', actual)
+//console.log('actual:', actual)
 	test.deepEqual(actual, expected)
 
 	test.done()
@@ -74,13 +72,13 @@ function testTags(test) {
 			'<tag4 />', '', ''
 		],
 		tags: [{
-			tag: 'tag1', index: 1, voidElement: false, attributes: {},classes: []
+			t: 'tag1', i: 1, a: {},c: []
 			}, {
-			tag: 'tag2', index: 4, voidElement: false, attributes: {}, classes: []
+			t: 'tag2', i: 4, a: {}, c: []
 			}, {
-			tag: 'tag3', index: 7, voidElement: true, attributes: {}, classes: []
+			t: 'tag3', i: 7, v: true, a: {}, c: []
 			}, {
-			tag: 'tag4', index: 10, voidElement: true, attributes: {}, classes: []
+			t: 'tag4', i: 10, v: true, a: {}, c: []
 		} ]
 	}
 
@@ -99,12 +97,11 @@ function testEmptyAttribute(test) {
 			'<tag a1 class>', '', ''
 		],
 		tags: [ {
-			tag: 'tag', index: 1, voidElement: false,
-			attributes: {
+			t: 'tag', i: 1,
+			a: {
 				a1: '',
-				class: '',
 			},
-			classes: []
+			c: []
 		} ]
 	}
 
@@ -123,12 +120,11 @@ function testUnquotedAttribute(test) {
 			'<tag a1=a class = b>', '', ''
 		],
 		tags: [ {
-			tag: 'tag', index: 1, voidElement: false,
-			attributes: {
+			t: 'tag', i: 1,
+			a: {
 				a1: 'a',
-				class: 'b'
 			},
-			classes: [ 'b']
+			c: [ 'b']
 		} ]
 	}
 
@@ -147,12 +143,11 @@ function testQuotedAttribute(test) {
 			'<tag a1=\'a\' class = "b c ">', '', ''
 		],
 		tags: [ {
-			tag: 'tag', index: 1, voidElement: false,
-			attributes: {
+			t: 'tag', i: 1,
+			a: {
 				a1: 'a',
-				class: 'b c '
 			},
-			classes: [ 'b', 'c']
+			c: [ 'b', 'c']
 		} ]
 	}
 
