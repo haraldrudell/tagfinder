@@ -12,9 +12,7 @@
 	"dependencies": {
 	},
 	"devDependencies": {
-		"nodeunit": "",
-		"uglify-js": "",
-		"greatjson": ""
+		"mochawrapper": ""
 	},
 	"repository" : {
 		"type" : "git",
@@ -22,6 +20,7 @@
 	},
 	"main": "lib/tagfinder",
 	"scripts": {
-		"test": "nodeunit test"
+		"test": "mocha --ui exports --reporter spec",
+		"monitor": "mocha --ui exports --reporter min --watch"
 	}
 }
