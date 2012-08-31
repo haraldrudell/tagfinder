@@ -43,9 +43,9 @@ The document is split into an array of:
   * One initial piece containing markup before any opening tag
   * For each found opening tag, 3 elements:
 
-     * The tag itself eg. '<a href=#>'
+     * The tag itself eg. `<a href=#>`
      * Element contents up to the first opening tag, closing tag,or cdata segment
-     * The rest of the element contents, eg. '<child/>text</a>'
+     * The rest of the element contents, eg. `<child/>text</a>`
 
 # Html5
 
