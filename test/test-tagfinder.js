@@ -1,25 +1,24 @@
 // test-tagfinder.js
-// nodeunit test for tagextractor.js 
 // © Harald Rudell 2012
 
 var tagfinder = require('../lib/tagfinder')
 var assert = require('mochawrapper')
-
+/*
 // test providing empty markup
-exports['Empty Markup'] = {
-	'Can compile undefined': function() {
+exports['Empty Markup:'] = {
+	'Can parse undefined': function() {
 		var html
 		var expected = {
-			contents: [ 'undefined' ],
+			pieces: [ 'undefined' ],
 			tags: []
 		}
 		var actual = tagfinder.decomposeHtml(html)
 		assert.deepEqual(actual, expected)
 	},
-	'Can compile empty string': function () {
+	'Can parse empty string': function () {
 		var html = ''
 		var expected = {
-			contents: [ '' ],
+			pieces: [ '' ],
 			tags: []
 		}
 		var actual = tagfinder.decomposeHtml(html)
@@ -27,16 +26,20 @@ exports['Empty Markup'] = {
 	}
 }
 
-exports['Parsing'] = {
-	'Can remove html comments': function() {
-		var html = '<!doctype html> <!-- hey < > - --> <title> <!-- --> </title> z'
+exports['Pieces Count:'] = {
+	'Text is one piece': function() {
+		var html = 'abc'
 		var expected = {
-			contents: [
-				'<!doctype html>  ',
-				'<title>',
-				' <!-- --> ',
-				'</title> z',
-			],
+			pieces: [ 'abc' ],
+			tags: []
+		}
+		var actual = tagfinder.decomposeHtml(html)
+		assert.deepEqual(actual, expected)
+	},
+	'One tag is 4 pieces': function () {
+		var html = 'a<title>b</title>'
+		var expected = {
+			pieces: [ 'a', '<title>', 'b', '</title>' ],
 			tags: [{
 				t: 'title',
 				i: 1,
@@ -44,15 +47,17 @@ exports['Parsing'] = {
 				c: [],
 			}],
 		}
-
 		var actual = tagfinder.decomposeHtml(html)
-//console.log('actual:', actual)
 		assert.deepEqual(actual, expected)
-	},
-	'Can find opening tags': function() {
+	}
+
+}
+*/
+exports['Tags:'] = {
+	'Should find opening tags': function() {
 		var html = ' <tag1></tag1> <tag2 ></tag2> <tag3/> <tag4 />'
 		var expected = {
-			contents: [
+			pieces: [
 				' ',
 				'<tag1>', '', '</tag1> ',
 				'<tag2 >', '', '</tag2> ',
@@ -71,12 +76,12 @@ exports['Parsing'] = {
 		}
 
 		var tagData = tagfinder.decomposeHtml(html)
-		assert.deepEqual(tagData, expected)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
 	},
-	'Empty attributes': function() {
+	'Should find empty attributes': function() {
 		var html = ' <tag a1 class>'
 		var expected = {
-			contents: [
+			pieces: [
 				' ',
 				'<tag a1 class>', '', ''
 			],
@@ -90,12 +95,12 @@ exports['Parsing'] = {
 		}
 
 		var tagData = tagfinder.decomposeHtml(html)
-		assert.deepEqual(tagData, expected)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
 	},
-	'Unquoted attributes': function() {
+	'Should find unquoted attributes': function() {
 		var html = ' <tag a1=a class = b>'
 		var expected = {
-			contents: [
+			pieces: [
 				' ',
 				'<tag a1=a class = b>', '', ''
 			],
@@ -109,12 +114,12 @@ exports['Parsing'] = {
 		}
 
 		var tagData = tagfinder.decomposeHtml(html)
-		assert.deepEqual(tagData, expected)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
 	},
-	'Quoted attributes': function() {
+	'Should find quoted attributes': function() {
 		var html = ' <tag a1=\'a\' class = "b c ">'
 		var expected = {
-			contents: [
+			pieces: [
 				' ',
 				'<tag a1=\'a\' class = "b c ">', '', ''
 			],
@@ -128,23 +133,136 @@ exports['Parsing'] = {
 		}
 
 		var tagData = tagfinder.decomposeHtml(html)
-		assert.deepEqual(tagData, expected)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
 	},
-	'Unescaped content: script and textarea': function () {
+	'Should continue after corrupt opening tag': function() {
+		var html = ' <div><tag"a"><title>'
+		var expected = {
+			pieces: [
+				' ',
+				'<div>', '', '<tag"a">',
+				'<title>', '', '',
+			],
+			tags: [{
+				t: 'div',
+				i: 1,
+				a: {},
+				c: [],
+			},{
+				t: 'title',
+				i: 4,
+				a: {},
+				c: [],				
+			}]
+		}
+
+		var tagData = tagfinder.decomposeHtml(html)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
+	},
+}
+
+exports['Comments:'] = {
+	'Should remove html comments': function() {
+		var html = '<!doctype html> <!-- hey < > - --> <title> <!-- --> </title> z'
+		var expected = {
+			pieces: [
+				'<!doctype html>  ',
+				'<title>',
+				' <!-- --> ',
+				'</title> z',
+			],
+			tags: [{
+				t: 'title',
+				i: 1,
+				a: {},
+				c: [],
+			}],
+		}
+		var actual = tagfinder.decomposeHtml(html)
+		assert.deepEqual(actual, expected, 'html:' + assert.inspectDeep(html))
+	},
+	'Should ignore tags inside comments': function() {
+		var html = '<!doctype html>a<!--b<div>c-->d'
+		var expected = {
+			pieces: [
+				'<!doctype html>ad',
+			],
+			tags: [],
+		}
+		var actual = tagfinder.decomposeHtml(html)
+		assert.deepEqual(actual, expected, 'html:' + assert.inspectDeep(html))
+	},
+	'Should detect comments after closing tags': function() {
+		var html = '<!doctype html>a</div><!--b<div>c-->d<title>e'
+		var expected = {
+			pieces: [
+				'<!doctype html>a</div>d',
+				'<title>', 'e', ''
+			],
+			tags: [{
+				t: 'title',
+				i: 1,
+				a: {},
+				c: [],
+			}],
+		}
+		var actual = tagfinder.decomposeHtml(html)
+		assert.deepEqual(actual, expected, 'html:' + assert.inspectDeep(html))
+	},
+}
+
+exports['Character Data:'] = {
+	'Should parse cdata as text': function () {
+		var html = ' <div><![CDATA[ & </div><br/> ]]></div>'
+		var expected = {
+			pieces: [
+				' ',
+				'<div>', '', '<![CDATA[ & </div><br/> ]]></div>'],
+			tags: [{
+				t: 'div',
+				i: 1,
+				a: {},
+				c: [],
+			}]
+		}
+		var tagData = tagfinder.decomposeHtml(html)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
+	},
+	'Should ignore tags inside cdata': function () {
+		var html = ' <div><![CDATA[ & <div><br/> ]]></div>'
+		var expected = {
+			pieces: [
+				' ',
+				'<div>', '', '<![CDATA[ & <div><br/> ]]></div>'
+			],
+			tags: [{
+				t: 'div',
+				i: 1,
+				a: {},
+				c: [],
+			}]
+		}
+		var tagData = tagfinder.decomposeHtml(html)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
+	},
+}
+
+exports['Unescaped Content:'] = {
+	'Should retain ampersand and less than': function () {
 		var html = ' <script>a<!--b&<c-->d</script>'
 		var expected = {
-			contents: [' ', '<script>', 'a<!--b&<c-->d', '</script>'],
+			pieces: [' ', '<script>', 'a<!--b&<c-->d', '</script>'],
 			tags: [{
 				t: 'script', i: 1, a: {}, c: []
 			}]
 		}
 		var tagData = tagfinder.decomposeHtml(html)
-		assert.deepEqual(tagData, expected)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
 	},
-	'Closing tag in unescaped content': function () {
+	'Should retain enclosed closing tags': function () {
 		var html = ' <script>a<!--b</script>c-->d<!--e-->f</script>'
 		var expected = {
-			contents: [' ', '<script>', 'a<!--b</script>c-->d<!--e-->f', '</script>'],
+			pieces: [' ', '<script>', 'a<!--b</script>c-->d<!--e-->f', '</script>'],
 			tags: [{
 				t: 'script', i: 1, a: {}, c: []
 			}]
@@ -152,12 +270,31 @@ exports['Parsing'] = {
 		var tagData = tagfinder.decomposeHtml(html)
 		assert.deepEqual(tagData, expected)
 	},
-	'MathML': function () {
+	'Should retain enclosed opening tags': function () {
+		var html = ' <script>a<!--b<div>c-->d<!--e-->f</script>'
+		var expected = {
+			pieces: [
+				' ',
+				'<script>', 'a<!--b<div>c-->d<!--e-->f', '</script>'],
+			tags: [{
+				t: 'script',
+				i: 1,
+				a: {},
+				c: []
+			}]
+		}
+		var tagData = tagfinder.decomposeHtml(html)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
+	},
+}
+
+exports['Foreign Content:'] = {
+	'Should parse MathML': function () {
 		var html = '<math xmlns="http://www.w3.org/1998/Math/MathML">' +
 			'<mrow><mi>a</mi><mo>+</mo><mi>b</mi></mrow>' +
 			'</math>'
 		var expected = {
-			contents: [ '', '<math xmlns="http://www.w3.org/1998/Math/MathML">',
+			pieces: [ '', '<math xmlns="http://www.w3.org/1998/Math/MathML">',
 					'', '', '<mrow>', '', '', '<mi>', 'a', '</mi>', '<mo>', '+', '</mo>', '<mi>',
 					'b', '</mi></mrow></math>' ],
 		tags: [{
@@ -170,18 +307,7 @@ exports['Parsing'] = {
 		var tagData = tagfinder.decomposeHtml(html)
 		assert.deepEqual(tagData, expected)
 	},
-	'cdata section': function () {
-		var html = ' <div><![CDATA[ & </div><br/> ]]></div>'
-		var expected = {
-			contents: [' ', '<div>', '<![CDATA[ & </div><br/> ]]>', '</div>'],
-			tags: [
-				{t: 'div', i: 1, a: {}, c: []},
-			]
-		}
-		var tagData = tagfinder.decomposeHtml(html)
-		assert.deepEqual(tagData, expected)
-	},
-	'svg': function () {
+	'Should parse svg': function () {
 		var html = '<div><svg xmlns="http://www.w3.org/2000/svg" ' +
 		'version="1.1" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" ' +
 		'style="width:100%; height:100%; position:absolute; top:0; left:0; z-index:-1;">' +
@@ -193,7 +319,7 @@ exports['Parsing'] = {
 		'<circle cx="50" cy="50" r="30" style="fill:url(#gradient)" />' +
 		'</svg></div>'
 		var expected = {
-			contents: ['', '<div>', '', '',
+			pieces: ['', '<div>', '', '',
 				'<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" style="width:100%; height:100%; position:absolute; top:0; left:0; z-index:-1;">',
 				'', '', '<linearGradient id="gradient">', '', '',
 				'<stop class="begin" offset="0%"/>', '', '',

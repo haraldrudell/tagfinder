@@ -2,25 +2,36 @@
 	"name": "tagfinder",
 	"description": "Tagfinder parses html5 markup for opening tags and their attributes by Harald Rudell",
 	"author": "Harald Rudell <harald@allgoodapps.com> (http://www.haraldrudell.com)",
-	"keywords": ["template", "engine", "express", "html", "html5", "json", "client", "webfiller", "parser"],
+	"keywords": [
+		"template",
+		"engine",
+		"express",
+		"html",
+		"html5",
+		"json",
+		"client",
+		"webfiller",
+		"parser"
+	],
 	"homepage": "https://github.com/haraldrudell/tagfinder",
 	"bugs": "https://github.com/haraldrudell/tagfinder/issues",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"contributors": [
 		"Harald Rudell <harald@allgoodapps.com> (http://www.haraldrudell.com)"
 	],
-	"dependencies": {
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"mochawrapper": ""
 	},
-	"repository" : {
-		"type" : "git",
-		"url" : "https://haraldrudell@github.com/haraldrudell/tagfinder.git"
+	"repository": {
+		"type": "git",
+		"url": "https://haraldrudell@github.com/haraldrudell/tagfinder.git"
 	},
 	"main": "lib/tagfinder",
 	"scripts": {
 		"test": "mocha --ui exports --reporter spec",
-		"monitor": "mocha --ui exports --reporter min --watch"
+		"monitor": "mocha --ui exports --reporter min --watch",
+		"debugtest": "mocha --debug-brk --ui exports --reporter spec",
+		"coverage": "mochacoverage"
 	}
 }
