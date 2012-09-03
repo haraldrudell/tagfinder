@@ -159,6 +159,24 @@ exports['Tags:'] = {
 		var tagData = tagfinder.decomposeHtml(html)
 		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
 	},
+	'Newline in attribute value': function() {
+		var html = ' <div class = "a\nb"></div>'
+		var expected = {
+			pieces: [
+				' ',
+				'<div class = "a\nb">', '', '</div>',
+			],
+			tags: [{
+				t: 'div',
+				i: 1,
+				a: {},
+				c: ['a', 'b'],
+			}]
+		}
+
+		var tagData = tagfinder.decomposeHtml(html)
+		assert.deepEqual(tagData, expected, 'html:' + assert.inspectDeep(html))
+	},
 }
 
 exports['Comments:'] = {
@@ -192,12 +210,33 @@ exports['Comments:'] = {
 		var actual = tagfinder.decomposeHtml(html)
 		assert.deepEqual(actual, expected, 'html:' + assert.inspectDeep(html))
 	},
-	'Should detect comments after closing tags': function() {
+	'Should detect comments after closing tags': function () {
 		var html = '<!doctype html>a</div><!--b<div>c-->d<title>e'
 		var expected = {
 			pieces: [
 				'<!doctype html>a</div>d',
 				'<title>', 'e', ''
+			],
+			tags: [{
+				t: 'title',
+				i: 1,
+				a: {},
+				c: [],
+			}],
+		}
+		var actual = tagfinder.decomposeHtml(html)
+		assert.deepEqual(actual, expected, 'html:' + assert.inspectDeep(html))
+	},
+	'Removed comments does not affect subsequent positions': function () {
+		var html = '<!-- views/unauthorized.ejs --><!doctype html>\n' +
+			'<title> - Unauthorized</title>'
+		var bindings = {
+			title: ['ABC']
+		}
+		var expected = {
+			pieces: [
+				'<!doctype html>\n',
+				'<title>', ' - Unauthorized', '</title>'
 			],
 			tags: [{
 				t: 'title',
